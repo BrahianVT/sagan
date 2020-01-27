@@ -1,89 +1,279 @@
-var initSearch = require('../feature/search/main');
-var initSearchFacets = require('../feature/searchFacets/main');
-var initFilterableList = require('../feature/filterableList/main');
-var initClipboardButtons = require('../feature/clipboardButtons/main');
-var initCodeSidebar = require('../feature/codeSidebar/main');
-var initStsImport = require('../feature/stsImport/main');
-var initMobileSupport = require('../feature/mobileSupport/main');
-var initInfoPopups = require('../feature/infoPopups/main');
-var initPlatformDownloads = require('../feature/platformDownloads/main');
-var initFormWidgets = require('../feature/formWidgets/main');
-var initPrettify = require('../feature/prettify/main');
-var initMap = require('../feature/map/main');
-var initTimeAgo = require('../feature/timeAgo/main');
-var initHideShowGuide = require('../feature/hide-show-guide/main');
-var initHomepage = require('../feature/homepage/main');
+import $ from 'jquery';
+import '@fancyapps/fancybox'
+import '@fancyapps/fancybox/dist/jquery.fancybox.css'
+import '@fortawesome/fontawesome-free/css/all.css'
+import '../css/main.css'
 
-var most = require('most');
-var $ = require('jquery');
 
-var slice = Array.prototype.slice;
-var dataAttrRx = /^data-/i;
+$(document).ready(function() {
 
-var features = {
-    search: initSearch,
-    'search-facets': initSearchFacets,
-    'filterable-list': initFilterableList,
-    'clipboard-buttons': initClipboardButtons,
-    'code-sidebar': initCodeSidebar,
-    'sts-import': initStsImport,
-    'mobile-support': initMobileSupport,
-    'info-popups': initInfoPopups,
-    'platform-downloads': initPlatformDownloads,
-    'form-widgets': initFormWidgets,
-    'code-prettify': initPrettify,
-    'map': initMap,
-    'timeago': initTimeAgo,
-    'hide-show-guide': initHideShowGuide,
-    'homepage': initHomepage
-};
+    // Open external links in new tab
+    $("a[href^='http']").attr('target', '_blank');
 
-initFeatures(features, document).each(function(features) {
-    $(window).unload(function() {
-        destroyFeatures(features);
+    $(".lightbox, .topics-resources a[href*=youtu], #quote a[href*=youtu], .half a[href*=youtu]").click(function() {
+        var href = $(this).attr('href');
+        $(this).attr('href', href + '?autoplay=1&autohide=1&showinfo=0&controls=1');
+        $.fancybox({
+            'padding'   : 0,
+            'href'      : this.href.replace(new RegExp("watch\\?v=", "i"), 'embed/'),
+            'type'      : 'iframe',
+            'width'     : 1000,
+            'autoPlay'  : true,
+            'height'    : 560,
+            'autoSize'  : false,
+            fitToView   : true
+        });
+
+        return false;
     });
+
+    $('li#search').click(function(){
+        $('#search-nav').slideToggle();
+        $('li#search').toggleClass('close');
+        $('#searchheaderform input').focus();
+    });
+
+    //Guide
+    $('body.guide main h2[id]').click(function(){
+        $(this).parent().next().toggle();
+        $(this).toggleClass('open');
+    });
+
 });
 
-/**
- * Scans the document for the set of desired features, initializes
- * each, and returns a Stream containing a single array, whose contents
- * are the initialized features.
- * @param features
- * @param document
- * @returns {Object|*}
- */
-function initFeatures(features, document) {
-    return scanFeatures(features, document)
-        .map(function(key) {
-            return features[key]();
-        })
-        .reduce(function(initialized, feature) {
-            initialized.push(feature);
-            return initialized;
-        }, []);
-}
+// Terminal animation compiled with Babel
+"use strict";
 
-/**
- *
- * @param {object} features hash of feature initializers by name
- * @param {Document} document Document whose <html> is annotated with the
- *  set of desired features
- * @returns {object} most.js Stream containing the string names of
- *  the desired features
- */
-function scanFeatures(features, document) {
-    return most.fromArray(slice.call(document.documentElement.attributes))
-        .map(function(attr) {
-            var name = attr.name;
-            return dataAttrRx.test(name) && name.slice(5);
-        })
-        .filter(function(name) {
-            return name && name in features;
+window.onload = function () {
+    if (document.querySelector("body").id == 'index') {
+
+        $('.wordWrapper').addClass('ready');
+        $('#wordWrapper div').each(function(){
+            $(this).css('opacity', '1');
+
+            var characters = $(this).text().split('');
+
+            $(this).empty();
+            var jThis = jQuery(this);
+            $.each(characters, function (i, el) {
+                $(jThis).append('<span>' + el + '</span');
+            });
         });
+
+        var wordCounter=0;
+
+        function switchWords() {
+            swapClasses();
+            setTimeout(switchWords, 3000);
+
+            function swapClasses() {
+                $('#wordWrapper div').each(function(index){
+                    $('span', this).removeClass();
+                    $('span', this).addClass('up-'+wordCounter);
+                });
+                if (wordCounter === 4) {
+                    wordCounter = 0;
+                }
+                else {
+                    wordCounter++;
+                }
+            }
+        }
+
+        switchWords();
+
+        var type = function type() {
+            if (i < txt.length) {
+                document.querySelector(".terminal .typed").innerHTML += txt.charAt(i);
+                i++;
+                setTimeout(type, speed);
+
+                if (i == 22) {
+                    document.querySelector(".terminal .typed").innerHTML = document.querySelector(".terminal .typed").innerHTML.replace("\"Hello World!\"", "<span class='terminal-lime'>\"Hello World!\"</span>");
+                }
+            }
+        };
+
+        var handler = function handler(entries, observer) {
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
+
+            try {
+                for (var _iterator = entries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var entry = _step.value;
+
+                    if (entry.isIntersecting) {
+                        document.querySelector(".terminal .typed-placeholder").style.display = 'none';
+                        type();
+                    }
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion && _iterator.return != null) {
+                        _iterator.return();
+                    }
+                } finally {
+                    if (_didIteratorError) {
+                        throw _iteratorError;
+                    }
+                }
+            }
+        };
+
+        var i = 0;
+        var txt = 'return "Hello World!";';
+        var speed = 100;
+        var observer = new IntersectionObserver(handler);
+        observer.observe(document.querySelector(".terminal .terminal-blue"));
+    }
+};
+
+// Filter toggle
+$('#projects #proj-filters li').click(function(){
+
+    if($(this).hasClass('active')) {
+        $(this).toggleClass('active');
+    }
+    else {
+        $('#projects #proj-filters li').removeClass('active');
+        $(this).toggleClass('active');
+    }
+});
+
+//Nav animation
+function removeNavClasses () {
+    $('#scope').removeClass('why-scope learn-scope projects-scope community-scope');
+    $('.drop-menu').removeClass('active');
+    $('.has-menu').removeClass('active');
+}
+$('#why-target').mouseenter(function(){
+    removeNavClasses();
+    $('#scope').addClass('why-scope');
+    $('#why-items').addClass('active');
+});
+$('#learn-target').mouseenter(function(){
+    removeNavClasses();
+    $('#scope').addClass('learn-scope');
+    $('#learn-items').addClass('active');
+});
+$('#project-target').mouseenter(function(){
+    removeNavClasses();
+    $('#scope').addClass('projects-scope');
+    $('#project-items').addClass('active');
+});
+$('#community-target').mouseenter(function(){
+    removeNavClasses();
+    $('#scope').addClass('community-scope');
+    $('#community-items').addClass('active');
+});
+$('.drop-menu').mouseenter(function () {
+    $('this').addClass('active');
+});
+$('.drop-menu ul').mouseleave(function () {
+    removeNavClasses();
+});
+$('.drop-menu').mouseleave(function () {
+    removeNavClasses();
+});
+
+//Accessibility
+$('#why-hov span').focus(function(){
+    removeNavClasses();
+    $('#scope').addClass('why-scope');
+    $('#why-items').addClass('active');
+});
+$('#learn-hov span').focus(function(){
+    removeNavClasses();
+    $('#scope').addClass('learn-scope');
+    $('#learn-items').addClass('active');
+});
+$('#projects-hov span').focus(function(){
+    removeNavClasses();
+    $('#scope').addClass('projects-scope');
+    $('#project-items').addClass('active');
+});
+$('#community-hov span').focus(function(){
+    removeNavClasses();
+    $('#scope').addClass('community-scope');
+    $('#community-items').addClass('active');
+});
+$('#logo-focus').focus(function(){
+    setTimeout(function(){
+        $('#logo-focus').addClass('focused');
+    }, 150);
+});
+$('#logo-focus').blur(function(){
+    $(this).removeClass('focused');
+});
+$('#logo-focus').click(function(){
+    $(this).removeClass('focused');
+});
+$('.drop-menu').focus(function () {
+    $('this').addClass('active');
+});
+$('#logo-focus, #nav-items a, #search').focus(function () {
+    removeNavClasses();
+});
+
+// Mobile nav
+document.querySelector('#hamburger').onclick = function(){
+    $('.mobile-close').fadeIn();
+    $('#mobile-nav').toggleClass('isOpen').css('opacity',1);
+    $('#mobile-nav-open #hamburger').removeClass('grow').addClass('shrink');
+    $('#mobile-nav-open .mobile-class').addClass('grow');
+    $('body').addClass('noscroll');
+    $('#mobile-nav > .relative').delay(350).fadeIn();
+}
+document.querySelector('.mobile-close').onclick = function(){
+    $('.mobile-close').fadeOut();
+    $('#mobile-nav').toggleClass('isOpen');
+    $('#mobile-nav-open .mobile-class').removeClass('grow').addClass('shrink');
+    $('#mobile-nav-open #hamburger').addClass('grow');
+    $('body').removeClass('noscroll');
+    resetSlide();
+    $('#mobile-nav > .relative').fadeOut(80);
+}
+$('#mobile-why').click(function(){
+    if($("#mobile-why-items").is(":hidden")) {
+        resetSlide ();
+    }
+    $('> .mobile-nav-arrow', this).toggleClass('flipped');
+    $('#mobile-why-items').slideToggle();
+});
+$('#mobile-learn').click(function(){
+    if($("#mobile-learn-items").is(":hidden")) {
+        resetSlide ();
+    }
+    $('> .mobile-nav-arrow', this).toggleClass('flipped');
+    $('#mobile-learn-items').slideToggle();
+});
+$('#mobile-projects').click(function(){
+    if($("#mobile-project-items").is(":hidden")) {
+        resetSlide ();
+    }
+    $('> .mobile-nav-arrow', this).toggleClass('flipped');
+    $('#mobile-project-items').slideToggle();
+});
+$('#mobile-community').click(function(){
+    if($("#mobile-community-items").is(":hidden")) {
+        resetSlide ();
+    }
+    $('> .mobile-nav-arrow', this).toggleClass('flipped');
+    $('#mobile-community-items').slideToggle();
+});
+function resetSlide () {
+    $('.mobile-expanded-category').slideUp();
+    $('.mobile-nav-arrow').removeClass('flipped');
 }
 
-function destroyFeatures(features) {
-    features.forEach(function(feature) {
-        feature.destroy();
-    });
-}
+$("header #search").keypress(function (e) {
+    if (e.which == 13 || e.which == 32) {
+        $('#search-nav').slideToggle();
+        $(this).toggleClass('close');
+        $('#searchheaderform input').focus();
+    }
+});
